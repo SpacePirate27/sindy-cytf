@@ -31,7 +31,7 @@ All the columns from the above steps are merged together to form the CSV file [d
 
 ### Step 5. Combinations
 
-For each cyclone, all valid nC4 pairs are chosen to create the final dataset mapping of inputs (any three prior timestamps in order) to output (Position of fourth timestamp).
+For each cyclone, all valid nC4 pairs are chosen to create the [final dataset mapping](./mapping.csv) of inputs (any three prior timestamps in order) to output (Position of fourth timestamp).
 
 
 ## **Models**
