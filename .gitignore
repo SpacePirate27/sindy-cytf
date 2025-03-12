@@ -2,3 +2,8 @@
 ./lsp
 /clj-kondo/
 /.clj-kondo/
+
+.idea
+.lsp
+
+cyclone-track-forecasting/target/*
