@@ -13,26 +13,27 @@
 (def ds (ds/->dataset "resources/final_dataset.csv" {:key-fn keyword}))
 
 (def ds-intermediate (tc/drop-columns ds [:name :basin :filename :timestamp]))
-(def ds-final-dx (tc/drop-missing (tc/drop-columns ds-intermediate [:dy])))
-(def ds-final-dy (tc/drop-missing (tc/drop-columns ds-intermediate [:dx])))
 
 (defn train-loop 
   [ds-intermediate model-name]
-)
+  (let [ds-dx (tc/drop-missing (tc/drop-columns ds-intermediate [:dy]))
+        ds-dy (tc/drop-missing (tc/drop-columns ds-intermediate [:dx]))
+        split-x (first (tc/split->seq ds-dx :holdout {:seed 112723}))
+        split-y (first (tc/split->seq ds-dy :holdout {:seed 112723}))
+        pipeline-x (mm/pipeline
+                    (ds-mm/set-inference-target :dx)
+                    #:metamorph{:id :model}
+                    (ml/model {:model-type model-name}))
+        pipeline-y (mm/pipeline
+                    (ds-mm/set-inference-target :dy)
+                    #:metamorph{:id :model}
+                    (ml/model {:model-type model-name}))
+        fitted-x (mm/fit (:train split-x) pipeline-x)
+        fitted-y (mm/fit (:train split-y) pipeline-y)]
+    [fitted-x fitted-y]))
 
 (defn predict-loop
   [model-dx model-dy])
-
-
-(def ols-pipe-fn
-  (mm/pipeline
-   (ds-mm/set-inference-target :dx)
-   #:metamorph{:id :model}
-   (ml/model {:model-type :smile.regression/ordinary-least-square})))
-
-
-; ### Fit Regressor
-(def fitted (mm/fit (:train split)  ols-pipe-fn))
 
 ; ### Get Prediction
 (def prediction
