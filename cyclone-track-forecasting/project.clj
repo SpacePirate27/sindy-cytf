@@ -7,7 +7,7 @@
                  [org.clojars.haifengl/smile "4.2.0"]
                  [org.scicloj/scicloj.ml.xgboost "6.3.0"]
                  [org.scicloj/metamorph.ml "1.2"]
-                 [org.scicloj/clay "2-beta19"]
+                 [org.scicloj/clay "2-beta32"]
                  [scicloj/tablecloth "7.042"]
                  [org.scicloj/kindly "4-beta15"]]
   :main ^:skip-aot cyclone-track-forecasting.core

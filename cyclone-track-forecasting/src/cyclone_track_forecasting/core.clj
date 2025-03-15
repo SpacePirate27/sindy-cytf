@@ -5,3 +5,8 @@
 
 ; # This is a test
 
+(defn load-dataset 
+  "Loads the dataset"
+  [path]
+  (tc/dataset path)
+  )
