@@ -6,28 +6,24 @@
             [scicloj.metamorph.core :as mm]
             [scicloj.metamorph.ml :as ml]
             [scicloj.metamorph.ml.loss :as loss]
-            [scicloj.ml.smile.regression])
-  )
-
-
+            [scicloj.ml.smile.regression]))
 
 ; ### Load and process Dataset
 
 (def ds (ds/->dataset "resources/final_dataset.csv" {:key-fn keyword}))
 
 (def ds-intermediate (tc/drop-columns ds [:name :basin :filename :timestamp]))
-(def ds-final (tc/drop-missing ds-intermediate))
+(def ds-final-dx (tc/drop-missing (tc/drop-columns ds-intermediate [:dy])))
+(def ds-final-dy (tc/drop-missing (tc/drop-columns ds-intermediate [:dx])))
+
+(defn train-loop 
+  [ds-intermediate model-name]
+)
+
+(defn predict-loop
+  [model-dx model-dy])
 
 
-; ### Train-Test split
-(def split
-  (first
-   (tc/split->seq ds-final :holdout {:seed 112723})))
-
-(:train split)
-(:test split)
-
-; ### Pipeline
 (def ols-pipe-fn
   (mm/pipeline
    (ds-mm/set-inference-target :dx)
