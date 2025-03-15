@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.scicloj/noj "2-beta10.1"]
                  [org.scicloj/scicloj.ml.smile "7.5.2"]
-                 [org.scicloj/clay "2-beta33"]]
+                 [org.scicloj/clay "2-beta33"]
+                 [org.scicloj/scicloj.ml.tribuo "0.2"]]
   :main ^:skip-aot cyclone-track-forecasting.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
