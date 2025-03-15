@@ -7,3 +7,6 @@
 .lsp
 
 cyclone-track-forecasting/target/*
+
+env/
+.ipynb_checkpoints
