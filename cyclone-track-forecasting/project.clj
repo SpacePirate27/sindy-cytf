@@ -7,7 +7,9 @@
                  [org.clojars.haifengl/smile "4.2.0"]
                  [org.scicloj/scicloj.ml.xgboost "6.3.0"]
                  [org.scicloj/metamorph.ml "1.2"]
-                 [techascent/tech.ml.dataset "7.052"]]
+                 [org.scicloj/clay "2-beta19"]
+                 [scicloj/tablecloth "7.042"]
+                 [org.scicloj/kindly "4-beta15"]]
   :main ^:skip-aot cyclone-track-forecasting.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
