@@ -63,17 +63,30 @@
           true-y (tc/column (:test (first (tc/split->seq (tc/drop-missing (tc/drop-columns ds-intermediate [:dx])) :holdout {:seed 112723}))) :dy)
           mae-x (mean-absolute-error true-x pred-x)
           mae-y (mean-absolute-error true-y pred-y)]
-      (println (format "Model: %s | MAE (dx): %.4f | MAE (dy): %.4f" model mae-x mae-y)))))
+      {:model model :mae-x mae-x :mae-y mae-y})))
+
 
 (evaluate-models ds-intermediate)
 
-
-; Step 1 : Group by cyclone name
-; Step 2 : Get output using current timestep
-; Step 3 : Return Trajectory
-
-;; (defn calculate-cyclone
-;;   [ds-test model cyclone-name]
-;;   (let [
-;;         ]))
-
+(kind/reagent
+ ['(fn []
+     [:div {:style {:height "500px"}
+            :ref   (fn [el]
+                     (let [m (-> js/L
+                                 (.map el)
+                                 (.setView (clj->js [12.97 77.59])
+                                           13))
+                           lat-longs [[15.0 68.0]
+                                      [15.0 67.0]
+                                      [15.0 66.5]
+                                      [18.0 66.0]
+                                      [20.0 64.0]]
+                           polyline (-> js/L
+                                        (.polyline (clj->js lat-longs) (clj->js {:color "red"}))
+                                        (.addTo m))]
+                       (-> js/L
+                           .-tileLayer
+                           (.provider "OpenStreetMap.Mapnik")
+                           (.addTo m))
+                       (.fitBounds m (.getBounds polyline))))}])]
+ {:html/deps [:leaflet]})
