@@ -35,6 +35,5 @@ For each cyclone, all valid nC4 pairs are chosen to create the [final dataset ma
 
 
 ## **Models**
-We experimented with the following models:
 
-<ADD REGRESSION MODELS>
+Further information on this can be found in the clay notebook of this repo.
