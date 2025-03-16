@@ -38,22 +38,30 @@
 
 (defn predict-loop
   [model-dx model-dy pipeline-x pipeline-y ds-intermediate]
-  (let [ds-dx (tc/drop-missing (tc/drop-columns ds-intermediate [:dy]))
-        ds-dy (tc/drop-missing (tc/drop-columns ds-intermediate [:dx]))
+  (let [ds-dx-drop (tc/drop-columns ds-intermediate [:dy])
+        ds-dy-drop (tc/drop-columns ds-intermediate [:dx])
+        _ (prn "dropped ds-dx" ds-dx-drop)
+        _ (prn "dropper ds-dy" ds-dy-drop)
+        ds-dx (tc/drop-missing ds-dx-drop)
+        ds-dy (tc/drop-missing ds-dy-drop)
+        _ (prn "drop-missing ds-dx" ds-dx)
+        _ (prn "drop-missing ds-dy" ds-dy)
         split-x (first (tc/split->seq ds-dx {:seed 112723}))
         split-y (first (tc/split->seq ds-dy {:seed 112723}))
-        prediction-x (-> (:test split-x)(mm/transform-pipe pipeline-x model-dx) :metamorph/data :dx)
-        prediction-y (-> (:test split-y)(mm/transform-pipe pipeline-y model-dy) :metamorph/data :dy)] 
+        prediction-x (-> (:test split-x) (mm/transform-pipe pipeline-x model-dx) :metamorph/data :dx)
+        prediction-y (-> (:test split-y) (mm/transform-pipe pipeline-y model-dy) :metamorph/data :dy)] 
   [prediction-x prediction-y]))
 
 
 (def models [:smile.regression/ordinary-least-square])
 
-(defn mean-absolute-error [y-true y-pred]
+(defn mean-absolute-error 
+  [y-true y-pred]
   (stats/mean (map #(Math/abs (- %1 %2)) y-true y-pred)))
 
 ; ### Training Models
-(defn evaluate-models [ds-intermediate] 
+(defn evaluate-models 
+  [ds-intermediate] 
   (doseq [model models]
     (let [[fitted-x fitted-y pipeline-x pipeline-y] (train-loop ds-intermediate model)
           [pred-x pred-y] (predict-loop fitted-x fitted-y pipeline-x pipeline-y ds-intermediate)
