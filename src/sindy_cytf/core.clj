@@ -15,7 +15,7 @@
 ; ## 3. Training the Models 
 ; ### Imports
 
-(ns cyclone-track-forecasting.core
+(ns sindy-cytf.core
   (:require [scicloj.kindly.v4.kind :as kind]
             [tablecloth.api :as tc]
             [tech.v3.dataset :as ds]

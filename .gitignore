@@ -5,9 +5,7 @@
 
 .idea
 .lsp
-
-cyclone-track-forecasting/target/*
-cyclone-track-forecasting/.calva/*
+.nrepl-port
 
 env/
 .ipynb_checkpoints

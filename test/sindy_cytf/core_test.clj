@@ -1,6 +1,6 @@
-(ns cyclone-track-forecasting.core-test
+(ns sindy-cytf.core-test
   (:require [clojure.test :refer :all]
-            [cyclone-track-forecasting.core :refer :all]))
+            [sindy-cytf.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
