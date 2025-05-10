@@ -3,6 +3,8 @@
 /clj-kondo/
 /.clj-kondo/
 
+.calva
+
 .idea
 .lsp
 .nrepl-port
