@@ -28,7 +28,7 @@
 ; ### Load Dataset
 
 (def ds (ds/->dataset "resources/final_dataset.csv" {:key-fn keyword}))
-(def ds-intermediate (tc/drop-columns ds [:name :basin :timestamp]))
+(def ds-intermediate (tc/drop-columns ds [:name :timestamp :lat :lon :filename]))
 
 ; ### Training Loop
 (defn train-loop 
