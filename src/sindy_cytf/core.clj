@@ -28,7 +28,7 @@
 ; ### Load Dataset
 
 (def ds (ds/->dataset "resources/final_dataset.csv" {:key-fn keyword}))
-(def ds-intermediate (tc/drop-columns ds [:name :timestamp :lat :lon :filename]))
+(def ds-intermediate (tc/drop-columns ds [:name :basin :timestamp :lat :lon :filename]))
 
 ; ### Training Loop
 (defn train-loop 
@@ -62,7 +62,9 @@
   [prediction-x prediction-y]))
 
 ; We selected Ordinary Least Square, Gradient Tree Boost and Random Forest Regressors for training 
-(def models [:smile.regression/ordinary-least-square :smile.regression/gradient-tree-boost :smile.regression/random-forest])
+(def models [:smile.regression/ordinary-least-square
+             :smile.regression/gradient-tree-boost
+             :smile.regression/random-forest])
 
 ; And Mean absolute error as our metric
 (defn mean-absolute-error 
@@ -102,18 +104,17 @@
                                               :dy-pred prediction-dy}) ; add lon to dy to get lon-pred 
         bar (-> foo (tc/+ :lat-pred [:dx-pred :lat]))
         baz (-> bar (tc/+ :lon-pred [:dy-pred :lon]))]
-    (kind/dataset (tc/select-columns baz [:filename :lat :lat-pred :lon :lon-pred]) {:dataset/print-range 100})))
+    (kind/dataset (tc/select-columns baz [:filename :lat :lat-pred :lon :lon-pred])
+                  {:dataset/print-range 100})))
 
 
 ; We take the Vardah cyclone as input to calculate the trajectory
 (def outputs (mapv (fn [{:keys [model model-dx model-dy 
                    pipeline-dx pipeline-dy]}] 
-        {model (forecast-cyclone 
-         model-dx model-dy pipeline-dx pipeline-dy "resources/cyclones/VARDAH.csv")}) ;; change cyclone name here
+        {model (forecast-cyclone model-dx model-dy pipeline-dx pipeline-dy "resources/cyclones/VARDAH.csv")}) ;; change cyclone name here
       trained-models))
 
 ;; Due to limitations, we had to manually hard-code the positions after forecasting to plot them. We intend to work on a more elegant solution.
-
 
 ; ### Ordinary Least Square : Prediction
 (kind/reagent
