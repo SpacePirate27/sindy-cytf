@@ -28,12 +28,14 @@
 
 (defn add-mult-combos-to-dataset
   [ds]
-  (let [numeric-cols (filter #(every? number? (tc/column ds %)) (tc/column-names ds))
-        ds-new (ds/select-columns ds numeric-cols)
-        ds-final (tc/dataset (map #(product-augmented-map %) (ds/rows ds-new)))
-        ds-dx (tc/add-column ds-final :dx (tc/column ds :dx))
-        ds-dy (tc/add-column ds-dx :dy (tc/column ds :dy))]
-    ds-dy))
+  (let [excluded-cols #{:dx :dy}
+        numeric-cols (filter #(and (not (excluded-cols %))
+                                   (every? number? (tc/column ds %)))
+                             (tc/column-names ds))
+        ds-new (ds/select-columns ds numeric-cols)]
+    (tc/dataset (map #(product-augmented-map %) (ds/rows ds-new)))))
+
+
 
 (defn train-loop
   [ds]
@@ -44,11 +46,11 @@
         pipeline-x (mm/pipeline
                      (ds-mm/set-inference-target :dx)
                      #:metamorph{:id :model}
-                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 500000)}))
+                     (ml/model {}))
         pipeline-y (mm/pipeline
                      (ds-mm/set-inference-target :dy)
                      #:metamorph{:id :model}
-                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 500000)}))
+                     (ml/model {:model-type :smile.regression/lasso, :lambda 0.05 :max-iterations 500000}))
         fitted-x (mm/fit (:train split-x) pipeline-x)
         fitted-y (mm/fit (:train split-y) pipeline-y)]
     [fitted-x fitted-y pipeline-x pipeline-y]))
@@ -82,14 +84,14 @@
 
 (comment
 
-  (eval-model ds-intermediate) 
+  (eval-model ds-intermediate)
 
   (def ds-spl (add-mult-combos-to-dataset ds-intermediate))
 
   (tc/column-names ds-spl)
   (tc/column-names ds-intermediate)
 
-  (def ds-combined (tc/concat ds-intermediate ds-spl {:axis :columns})) 
+  (def ds-combined (tc/concat ds-intermediate ds-spl {:axis :columns}))
 
   (defn add-columns [df1 df2]
     (reduce
@@ -97,12 +99,24 @@
        (tc/add-column acc col (df2 col)))
      df1
      (tc/column-names df2)))
-  
-  (def ds-result (add-columns ds-spl ds-intermediate))
-  (tc/shape ds-result)
-  (ds-result :dy)
 
-  (eval-model ds-result)
+  (def ds-result (add-columns ds-intermediate ds-spl))
+  (def ds-final (tc/add-column ds-result :ones (repeat (tc/row-count ds-result) 1)))
+  (tc/shape ds-final)
+
+  (eval-model ds-final)
+
+  (def df
+    (tc/dataset [{:a 1 :b 2 :c 3 :dx 1 :dy 2}
+                 {:a 4 :b 5 :c 6 :dx 3 :dy 4}]))
+
+  (def df-a
+    (add-mult-combos-to-dataset df))
+
+  (def df-b (add-columns df-a df))
+  (print df-b)
+
+
 
 
 
