@@ -44,11 +44,11 @@
         pipeline-x (mm/pipeline
                      (ds-mm/set-inference-target :dx)
                      #:metamorph{:id :model}
-                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 50000)}))
+                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 500000)}))
         pipeline-y (mm/pipeline
                      (ds-mm/set-inference-target :dy)
                      #:metamorph{:id :model}
-                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 50000)}))
+                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 500000)}))
         fitted-x (mm/fit (:train split-x) pipeline-x)
         fitted-y (mm/fit (:train split-y) pipeline-y)]
     [fitted-x fitted-y pipeline-x pipeline-y]))
