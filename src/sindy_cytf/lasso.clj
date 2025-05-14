@@ -44,13 +44,13 @@
         split-x (first (tc/split->seq ds-dx :holdout {:seed 112723 :ratio 0.8}))
         split-y (first (tc/split->seq ds-dy :holdout {:seed 112723 :ratio 0.8}))
         pipeline-x (mm/pipeline
-                     (ds-mm/set-inference-target :dx)
-                     #:metamorph{:id :model}
-                     (ml/model {}))
+                    (ds-mm/set-inference-target :dx)
+                    #:metamorph{:id :model}
+                    (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 500000)})) 
         pipeline-y (mm/pipeline
-                     (ds-mm/set-inference-target :dy)
-                     #:metamorph{:id :model}
-                     (ml/model {:model-type :smile.regression/lasso, :lambda 0.05 :max-iterations 500000}))
+                    (ds-mm/set-inference-target :dy)
+                    #:metamorph{:id :model}
+                    (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 500000)}))
         fitted-x (mm/fit (:train split-x) pipeline-x)
         fitted-y (mm/fit (:train split-y) pipeline-y)]
     [fitted-x fitted-y pipeline-x pipeline-y]))
@@ -88,11 +88,6 @@
 
   (def ds-spl (add-mult-combos-to-dataset ds-intermediate))
 
-  (tc/column-names ds-spl)
-  (tc/column-names ds-intermediate)
-
-  (def ds-combined (tc/concat ds-intermediate ds-spl {:axis :columns}))
-
   (defn add-columns [df1 df2]
     (reduce
      (fn [acc col]
@@ -104,7 +99,7 @@
   (def ds-final (tc/add-column ds-result :ones (repeat (tc/row-count ds-result) 1)))
   (tc/shape ds-final)
 
-  (eval-model ds-final)
+  (eval-model ds-result)
 
   (def df
     (tc/dataset [{:a 1 :b 2 :c 3 :dx 1 :dy 2}
