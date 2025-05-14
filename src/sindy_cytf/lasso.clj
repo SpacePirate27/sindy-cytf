@@ -12,7 +12,7 @@
 
 (def ds (ds/->dataset "resources/final_dataset.csv" {:key-fn keyword}))
 
-(def ds-intermediate (tc/drop-columns ds [:name :basin :timestamp :lat :lon :filename]))
+(def ds-intermediate (tc/drop-columns ds [:name :basin :timestamp :lat :lon :filename :moon_phase :day_sine :year_sine]))
 
 (defn product-augmented-map
   [m]
@@ -44,11 +44,11 @@
         pipeline-x (mm/pipeline
                      (ds-mm/set-inference-target :dx)
                      #:metamorph{:id :model}
-                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05)}))
+                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 50000)}))
         pipeline-y (mm/pipeline
                      (ds-mm/set-inference-target :dy)
                      #:metamorph{:id :model}
-                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05)}))
+                     (ml/model {:model-type :smile.regression/lasso, :lambda (double 0.05) :max-iterations (int 50000)}))
         fitted-x (mm/fit (:train split-x) pipeline-x)
         fitted-y (mm/fit (:train split-y) pipeline-y)]
     [fitted-x fitted-y pipeline-x pipeline-y]))
@@ -82,13 +82,30 @@
 
 (comment
 
-  (eval-model ds-intermediate)
+  (eval-model ds-intermediate) 
 
   (def ds-spl (add-mult-combos-to-dataset ds-intermediate))
 
-  (train-loop ds-spl)
+  (tc/column-names ds-spl)
+  (tc/column-names ds-intermediate)
 
-  (eval-model (add-mult-combos-to-dataset ds-intermediate))
+  (def ds-combined (tc/concat ds-intermediate ds-spl {:axis :columns})) 
+
+  (defn add-columns [df1 df2]
+    (reduce
+     (fn [acc col]
+       (tc/add-column acc col (df2 col)))
+     df1
+     (tc/column-names df2)))
+  
+  (def ds-result (add-columns ds-spl ds-intermediate))
+  (tc/shape ds-result)
+  (ds-result :dy)
+
+  (eval-model ds-result)
+
+
 
   )
 
+>
